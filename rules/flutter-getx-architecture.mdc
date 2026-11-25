@@ -1,0 +1,31 @@
+---
+description: GetX layered module architecture — follow for every Flutter feature
+globs: lib/**/*.dart
+alwaysApply: false
+---
+
+# Flutter GetX Architecture
+
+Full reference: `ARCHITECTURE.md`. Match an existing module over inventing a new pattern.
+
+## Hard layering
+- **View** (`*_view.dart` / `*_screen.dart`): UI only — `GetView`, compose widgets, `Obx`, call controller methods
+- **Controller**: state (`.obs`), business flow, navigation, API via `IApiRepository` only
+- **Binding**: `Get.put` / `Get.lazyPut` for the route
+- **Widgets / utils / models**: feature-local pieces; no business logic in widgets
+
+Never: API/Dio in UI · widget trees in controllers · manual `FeatureController()` when Binding/`Get.find` should supply it
+
+## Paths
+- Shared: `lib/src/core/` (bindings, constants, routes, services/api, utils)
+- Features: `lib/src/modules/<domain>_module/<feature>_module/` → `bindings/`, `controller/`, `views/`, `widgets/`, `utils/`, `models/`
+
+## New feature checklist
+1. Module folders + Binding + Controller + thin GetView
+2. Register in `AppRoutes` + `AppPages` with Binding
+3. New APIs → `app_endpoints.dart` + `IApiRepository` / `ApiRepository`
+4. Named routes (`Get.toNamed` / `Get.offAllNamed`); dispose nodes in `onClose`
+5. Strings → `app_constants.dart`; colors → `app_colors.dart`; reuse `core` widgets
+
+## Stack
+GetX · Dio · flutter_secure_storage · shared_preferences · flutter_dotenv · responsive_sizer · iconsax · flutter_gen · Firebase Messaging
